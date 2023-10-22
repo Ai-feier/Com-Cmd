@@ -1,7 +1,13 @@
 配置
 ```bash
-git config --global
-作用域：--local, --global, --system
+git config --global --list
+    作用域：--local, --global, --system
+```
+
+git add
+```bash
+git add -u # 更新工作区内容
+git add . # 可直接加文件或目录 git add dir a.txt
 ```
 
 清空暂存区的内容
