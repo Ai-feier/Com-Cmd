@@ -1,4 +1,4 @@
-配置
+配置(在./git 下的 config )
 ```bash
 git config --global --list
     作用域：--local, --global, --system
@@ -19,6 +19,25 @@ git log
 ```bash
 git log --oneline --all --n3 --graph
 ```
+
+查看 git 文件信息
+```bash
+git cat-file -t 前缀哈希值  # 类型
+git cat-file -p 前缀哈希值  # 详细信息
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### 远程
 查看远程仓库地址
