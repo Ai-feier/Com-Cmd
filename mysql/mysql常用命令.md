@@ -32,7 +32,7 @@ FLUSH PRIVILEGES;
 ```
 
 启动弱密码:
-![Alt text](image-36.png)
+![Alt text](assets/image-36.png)
 ```sql
 set global validate_password_policy=LOW;
 set global validate_password_length=9;
