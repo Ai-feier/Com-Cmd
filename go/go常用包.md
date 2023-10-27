@@ -34,15 +34,29 @@ testify (assert/)
 go get github.com/stretchr/testify/assert
 assert.Equal(t, expected, actual)  # 函数方法无法比较，只能使用反射获取值后比较
 
-github.com/stretchr/testify/require
+go get github.com/stretchr/testify/require
 require.NoError(t, err)
 ```
 
+mockgen
+```bash
+go get github.com/golang/mock/gomock
+go get github.com/golang/mock/mockgen
+go get github.com/golang/mock/mockgen/model
+go install github.com/golang/mock/mockgen@v1.6.0
+mockgen -destination=cache/mocks/mock_redis_cmdable.gen.go -package=mocks github.com/go-redis/redis/v9 Cmdable
+mockgen -source=db.go -destination=db_mock.go -package=main
+```
 
 ## 缓存
-go-redis
+go-redis redis客户端
 ```bash
 go get github.com/redis/go-redis/v9
+```
+
+singleflight
+```bash
+go get golang.org/x/sync/singleflight
 ```
 
 优质缓存 go-cache
