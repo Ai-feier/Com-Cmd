@@ -1,7 +1,6 @@
 防火墙命令，开启端口, 需重启防火墙：
 ```bash
-firewall-cmd --zone=public --add-port=3306/tcp --permanent
-
+firewall-cmd --zone=public --add-port=22/tcp --permanent
 firewall-cmd --reload
 ```
 
