@@ -76,3 +76,26 @@ go get github.com/valyala/bytebufferpool
 ![Alt text](assets/image.png)
 ![Alt text](assets/image-2.png)
 ![Alt text](assets/image-1.png)
+
+### 分布式存储组件
+etcd
+``bash
+go get go.etcd.io/etcd/client/v3
+```
+
+### 原子操作
+uber atomic
+```bash
+go get go.uber.org/atomic
+```
+
+可观测性
+(metrics) promethus:
+```bash
+go get github.com/prometheus/client_golang/prometheus
+go get go.buf.build/protocolbuffers/go/prometheus/prometheus
+```
+(tracing) opentelemetry:
+```bash
+go get go.opentelemetry.io/otel
+```
