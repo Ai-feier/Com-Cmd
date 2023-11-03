@@ -1,3 +1,8 @@
+ctrl:
+```bash
+ctrl+r  # 搜索以前命令
+```
+
 防火墙命令，开启端口, 需重启防火墙：
 ```bash
 firewall-cmd --zone=public --add-port=22/tcp --permanent
@@ -67,4 +72,17 @@ tree .
 brctl 命令（网络设备相关）
 ```bash
 brctl show
+```
+
+gcc
+```bash
+yum install gcc gcc-c++
+```
+PCRE
+```bash
+yum install pcre-devel
+```
+openssl
+```bash
+yum install openssl-devel -y
 ```
