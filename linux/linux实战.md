@@ -535,6 +535,165 @@ iftop
 iftop -P
 ```
 
+# Shell
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-58.png)
+
+管道与重定向
+
+管道与管道符
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-59.png)
+cat 与 ps 均为外部命令, 创建的两个进程, | 为为这两个进程创建了连接
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-60.png)
+
+重定向符号
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-61.png)
+
+变量
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-62.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-63.png)
+
+变量的引用
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-64.png)
+
+变量的作用范围
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-65.png)
+
+### 环境变量
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-66.png)
+配置文件:
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-67.png)
+> su - username(login shell): 
+>
+> 加载顺序: /etc/profile, ~/.bash_profile, ~/.bashrc, /etc/bashrc
+>
+> su username(no login shell):
+>
+> 加载顺序: ~/.bashrc, /etc/bashrc
+
+
+
+```bash
+$$  # 当前进程 PID
+$0  # 当前进程名称
+$?  # 上一个命令的错误数
+${num}  # 参数
+${2-_}  # 第二个参数为空, 替换为 _
+```
+
+数组
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-68.png)
+
+特殊字符
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-69.png)
+引用符
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-70.png)
+双引号: 不完全引用, 可以有 $
+单引号: 完全引用
+反引号: 可以接命令
+
+测试与判断
+测试命令
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-76.png)
+
+if 
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-77.png)
+
+case
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-78.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-79.png)
+循环
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-80.png)
+for
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-81.png)
+批量改名
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-82.png)
+C 语言风格
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-83.png)
+
+while
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-84.png)
+> until 循环与 while 相反, 条件为 false 执行
+
+案例: 判断并执行文件
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-85.png)
+
+命令行参数
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-86.png)
+
+函数
+自定义函数
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-87.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-88.png)
+> [ -d "/proc"/$i" ] && return 0
+> 
+> if 的简单写法([ ] &&:then ) proc 下的文件夹及对应一个进程
+
+系统函数库
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-89.png)
+
+### 特殊符号
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-71.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-72.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-73.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-74.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-75.png)
+```bash
+(( 5 > 4 && 6 > 5 ))
+```
+
+脚本控制优先级
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-90.png)
+
+fork 炸弹
+```bash
+func() { func | func& } ; func
+# 简写
+.(){.|.&};.
+
+# root 用户不受限制, 普通用户受到影响, 通过以下命令查看最大可创建进程数
+ulimit -a
+```
+
+捕获信号
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-91.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-92.png)
+
+计划任务
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-93.png)
+
+一次性计划任务
+运行时没有终端, 如需外部命令, 需要 source 导入, 没有输入(用 > )
+```bash
+at <data-time>
+cmd
+<EOF>  # 结束
+
+atq  # 查询任务
+```
+
+周期性计划任务
+位置: /var/spool/cron/
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-94.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-95.png)
+
+延时计划任务
+/etc/cron.d/0hourly
+/etc/anacrontab
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-96.png)
+
+为脚本加锁
+```bash
+flock -xn "/tmp/f.lock" -c "/a.sh"
+```
+
+正则表达式与文本搜索
+元字符
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-97.png)
+
+
+
+
+
 
 
 
