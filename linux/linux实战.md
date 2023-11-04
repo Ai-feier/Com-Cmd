@@ -347,6 +347,197 @@ kill -l  # 显示所有信号
 kill -9 <pid>
 ```
 
+守护进程
+开机随 linux 启动
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-47.png)
+
+日志 /var/log
+- messages: 系统常规日志
+- dmsg: 内核启动状态
+- secure: 安全日志
+- cron: 计划日志
+
+### 服务管理工具
+service 脚本位置: /etc/init.d/...
+
+
+
+systenctl 脚本位置: /usr/lib/systemd/system/...
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-48.png)
+
+更改级别
+```bash
+systemctl get-default 
+systemctl set-default multi-user.target
+```
+
+Selinux /etc/selinux/config
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-49.png)
+```bash
+# 查看标签
+ps -Z
+ls -Z
+```
+
+### 内存磁盘管理
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-50.png)
+
+内存查看命令
+```bash
+free 
+# -m M显示
+
+top```
+
+磁盘查看命令
+```bash
+fdisk -l
+parted -l
+df -h 
+du -h  # 紧凑的大小
+ls -h  # 文件大小含空洞大小
+
+dd if=/dev/zero bs=4M count=10 seek=20 of=afile
+# if, of  输入,输出文件
+# bs  块大小, block-size
+# count  实际多少块
+# seek  跳过过少块, 制造空洞文件
+```
+
+文件系统
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-51.png)
+
+
+
+i 节点 对应文件名
+
+ln链接
+```bash
+ln afile bfile  # 硬链接, i 节点相同
+ln -s afile bfile  # 软链接, i 节点不同
+```
+
+facl 文件权限控制
+```bash
+getfacl afile
+setfacl -m u:user1:r afile
+# -m, x  赋予, 回收权限
+# u:user1:rwx  用户
+# g:group1:rwx
+```
+
+
+磁盘分区与挂载
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-52.png)
+挂载磁盘步骤: 一块磁盘->分区->格式化->挂载
+磁盘大于 2TB 是使用 parted
+分区
+```bash
+fdis sda  # 制作分区
+
+# 使用 mkfs 把分区做成什么类型的文件系统
+# 格式化
+mkfs.ext4 sda1
+
+# 使用 mount 挂载
+mount /dev/sda1 /mnt/sda1
+```
+以上 mount 仅为单次可用, 要修改配置文件 /etc/fstab
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-53.png)
+
+
+### 用户磁盘配额
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-54.png)
+
+
+交换分区
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-55.png)
+```bash
+# 利用硬盘分区扩展 swap 
+mkswap /dev/sda1
+swapoff /dev/sda1
+
+# 以文件方式扩展分区
+dd if=/dev/ziro bs=4M count=1024 of=/swapfile
+mkswap /swapfile
+chmod 600 /swapfile
+swapon /swapfile
+
+# 永久生效
+vim /etc/fstab
+# /swapfile swap swap defaults 0 0
+```
+
+磁盘高级应用
+RAID
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-56.png)
+```bash
+# /dev/md0 是上层设备, 其余为下层, 不直接操作
+mdadm -C /dev/md0 -a yes -l1 -n2 /dev/sd[b,c]1
+# -l1 -l0  RAID级别
+# -n2  多少分区
+
+# 查看
+mdadm -D /dev/md0
+
+# 停掉 RAID
+mdadm --stop /dev/md0
+# 同时破坏其下的超级卷
+dd if=/dev/zero of=/dev/sdb1 bs=1M count=1
+dd if=/dev/zero of=/dev/sdc1 bs=1M count=1
+```
+
+LVM 逻辑卷
+```bash
+pvcreate /dev/sd[b,c,d]1
+pvs  # 查看
+
+# 卷组
+vgcreate ...
+vgs  # 查看
+
+# 创建新逻辑卷
+lvcreate -L 100M -n lv1 vg1
+
+# 要使用逻辑卷, 也需要格式化, 和挂载
+```
+
+扩展逻辑卷 (root)
+```bash
+vgextend centos /dev/sdb1
+
+# 查看
+pvs  # 物理
+vgs  # 卷组
+lvs  # 逻辑卷
+
+# 扩大逻辑卷
+lvextend -L +50G /dev/centos/root
+lvs
+df -h
+# 还要扩大文件系统
+xfs_growfs /dev/centos/root
+```
+
+系统综合状态查询
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-57.png)
+sar
+```bash
+sar -u 1 10
+# cpu 每 1 秒采样一次, 总 10 次
+sar -r 1 10  # 内存
+sar -b 1 10  # IO
+sar -d 1 10  # 每块磁盘
+sar -q 1 10  # 进程的使用
+```
+iftop
+```bash
+iftop -P
+```
+
+
+
+
 
 
 
