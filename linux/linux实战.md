@@ -689,17 +689,319 @@ flock -xn "/tmp/f.lock" -c "/a.sh"
 正则表达式与文本搜索
 元字符
 ![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-97.png)
+> 注意: shell 的通配符与正则表达式的区别
+> 
+> 使用 `\` 时, 需要使用 "", 没有会被 shell 解释器解释, 达不到正则效果
+
+find
+```bash
+find *txt -exec rm -v {}\;
+# => rm -vf {*txt}
+# -exec  不带交互, 相反  -ok
+```
+
+cut 
+```bash
+cut -d ":" -f7 /etc/passwd | sort | uniq -c | sort -r
+```
+
+行编辑器 sed, awk
+sed: 一般用于文本替换
+awk: 一般用于文本内容统计, 可替换 cut
+
+### sed
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-98.png)
+sed 替换命令
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-99.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-100.png)
+标志位
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-101.png)
+寻址
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-102.png)
+分组
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-103.png)
+
+sed 脚本
+```bash
+sed -f sedscript filename
+```
+
+删除( d 会删除一整行)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-104.png)
+追加, 插入, 更改
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-105.png)
+读写文件
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-106.png)
+下一行
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-107.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-108.png)
+多行模式
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-109.png)
+保持空间
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-110.png)
 
 
+awk
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-111.png)
+控制流程
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-112.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-113.png)
+字段引用
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-114.png)
+表达式
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-115.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-116.png)
+awk 的系统变量
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-117.png)
 
 
+# 服务管理
+## 防火墙
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-118.png)
+防火墙分类
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-119.png)
+iptables 表和链:
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-120.png)
+
+基本使用
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-121.png)
+```bash
+# 查看规则链
+iptables -t filter -L
+iptables -t filter -nL
+iptables -t filter -nvL
+iptables -nvL
+iptables -t nat -nvL  # nat 表
+
+# 添加一个 ip 能发送数据包到本机
+iptables -t filter -A INPUT -s 10.0.0.1 -j ACCEPT
+iptables -t filter -A INPUT -s 10.0.0.0/24 -j ACCEPT
+```
+iptable 过滤规则使用
+    ip 匹配以匹配到的第一条为准
+    - 全部允许, 阻止一部分 ip
+    - 全部阻止, 允许一部分 ip
+```bash
+# 修改 ip 规则链默认配置
+iptables -P INPUT DROP
+
+# 清空规则链, 不会修改规则链默认配置
+iptables -F
+
+# 可一个 -D 序号/完整规则名/正则 删除
+# -i  进入的网络接口
+# -o  出去的网络接口
+# -p  可指定协议
+# --dport  指定端口
+```
+
+nat 表使用
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-122.png)
+```bash
+# 目的地址转换
+# 用户把数据包发送给我, 当前主机把数据包转给一个 ip
+iptables -t nat -A PREROUTING eth0 -d 114.115.141.131 -p tcp --dport 80 -j DNAT --to-destination 10.0.0.1
+
+# 源地址转换
+# 把一个内网地址伪造成 iptables 主机的地址
+iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth1 -j SNAT --to-source 111.122.122.131
+
+service iptables stop
+```
+iptables 配置文件 ( /etc/sysconfig/iptables )
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-123.png)
 
 
+### firewalld
+firewalld 与 iptables 仅一个
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-124.png)
+```bash
+firewall-cmd state
+firewall-cmd --list-all
+firewall-cmd --zone=public --list-interfaces
+firewall-cmd --list-interfaces
+firewall-cmd --list-services
+firewall-cmd --get-zone
+firewall-cmd --get-default-zone
+firewall-cmd --get-active-zone
+
+# 添加
+firewall-cmd --add-service=https
+firewall-cmd --add-port=81/tcp  # 临时
+# 要永久添加, 要使用 reload
+firewall-cmd --add-port=82/tcp --permanent
+firewall-cmd --reload
+firewall-cmd --list-all
+
+# 移除
+firewalld --remove-source=10.0.0.1
+```
+
+### ssh 服务
+talnet: 明文传输
+```bash
+yun install telnet telnet-server xinetd -y
+systemctl start xinetd.service
+systemctl start talnet.service
+
+# 查看服务端口
+grep telnet /etc/services
+
+# iptables 打开方式
+iptables -I INPUT -p tcp -dport 23 -j ACCEPT
+iptables -vnL | grep 23
+# firewalld
+firewall-cmd --premanent --add-port=23/tcp
+firewall-cmd --reload
+firewall-cmd --list-all
+
+# 验证 talnet 明文传输
+tcpdump -i any port 23 -s 1500 -w /tmp/a.dump  # -s 1500: 1500 字节
+talnet localhost
+# 抓包图形工具 wireshark
+yum install wireshark-gnome
+```
+
+ssh 配置文件:
+服务端 /etc/ssh/sshd_config
+客服端 /etc/ssh/sshd_config
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-125.png)
+```bash
+# 查看端口监听
+netstat -ntpl | grep 22
+
+who
+whoami
+```
+
+ssh 秘钥认证
+只能是客户端产生
+```bash
+# 生成
+ssh-keygen -t rsa
+
+# 把公钥拷贝到目的主机
+ssh-copy-id -i /root/.ssh/id_rsa.pub root@10.23.124.2
+```
+
+ssh 远程拷贝 scp (隧道功能)
+```bash
+# 把本地文件拷贝到远程
+scp /tmp/a.txt root@12.023.132.1:/tmp/b.txt
+
+# 把远程拷贝到本地
+scp root@12.023.132.1:/tmp/b.txt /tmp/c.txt
+```
+
+FTP 服务: 文件传输协议
+命令链路: 21 端口
+数据链路: 主动模式和被动模式
+
+vsftpd 服务
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-126.png)
+```bash
+ftp localhost
+# 登录, 如果使用匿名登录, 回进到 /var/ftp, 该目录是共享的
+# 如使用已存在的用户名, 则来到用户的家目录
+```
+vsftpd 配置文件
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-127.png)
+```bash
+# 注意 selinux 保护
+getsebool -a | grep ftpd
+
+# 开启  -P(永久生效)
+setsebool -P ftpd_use_nfs 1
+
+firewall-cmd --permanent --add-service=ftp
+firewall-cmd --reload  # 永久添加要 reload, 临时不用
+
+# !cmd 执行本地命令
+
+put file
+get file
+
+man 5 vsftpd.conf  # 第 5 章是配置文件的帮助
+```
+
+虚拟用户
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-128.png)
+```bash
+# 该虚拟用户只用于做映射, 所以指定终端: /sbin/nologin
+useradd vuser -d /data/ftp -s /sbin/nologin
+# -d  指定用户家目录
+# -s  指定终端
+
+# 写虚拟用户名密码, u1\n123456\nu2....
+vim /etc/vsftpd/vuser/temp  
+# 转换为一个 db
+db_load -T -t hash -f /etc/vsftpd/vuser.temp /etc/vsftpd/vuser.db
+chmod 600 /etc/vsftpd/vuser.db
+# 配置可插拔...
+# 添加 auth, accout 两行
+vim /etc/pam.d/vsftpd.vuser
+# 修改 vsftpd 配置, 打开虚拟用户
+vim /etc/vsftpd/vstpd.conf  
+# 项: guest_enable=yes, guest_username, 新的 pam 服务
+
+mkdir -p /etc/vsftpd/vuserconfig
+vim u1  # 一个虚拟用户对应一个文件
+```
+u1:
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-129.png)
+
+samba, nfs
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-130.png)
+
+samba
+/etc/samba/smb.conf
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-131.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-132.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-133.png)
+```bash
+useradd user1
+smbpasswd -a user1  # 添加 smb 用户
+subpasswd -x user1  # 删除 smb 用户
+pdbedit -L  # 查看所用用户
+
+# linux 挂载
+mount -t cifs -o username=user1 //127.0.0.1/user1 /mnt
+# -t cifs  指定协议, 可以为 auto, 可以省略
+mount | tail 1
+umount /mnt
+
+# 挂载配置文件中的其他项
+mount -t cifs -o username=user1 //127.0.0.1/share /mnt
+```
+
+NFS 服务的配置与启动
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-134.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-135.png)
+```bash
+# 查看
+showmount -e localhost
+
+mount -t nfs localhost:/data/share /mnt
+```
+
+selinux 故障
+- 通过 grub 进入单用户模式(`rb.break`), 后执行`genhomedircon`, 重新根据家目录权限产生 selinux 标签
+- 也可用`touch /.autorelabel`, selinux 会重新打标签
 
 
+## Nginx
+OpenResty
+配置文件: /usr/local/openresty/nginx/conf/nginx.conf
+```bash
+yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo
+yum install openresty
 
+# openresty 没有写 systemd 服务脚本
+service openresty start
+```
 
-
+基于域名的虚拟主机
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-136.png)
 
 
 
