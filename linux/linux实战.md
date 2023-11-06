@@ -1004,4 +1004,31 @@ service openresty start
 ![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-136.png)
 
 
+LNMP
+
+DNS
+正向解析: 主机名 -> IP 
+反向解析: IP -> 主机名
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-137.png)
+bind: /etc/named.conf
+```bash
+yum install bind bind-utils -y
+systemctl start named.service
+
+# 缓存域名服务器
+named-checkconf
+```
+
+NAS
+多块 raid 
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-139.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-140.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-141.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-142.png)
+vsftpd 服务
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-143.png)
+修改 nfs 配置
+统一脚本
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-145.png)
+![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-144.png)
 
