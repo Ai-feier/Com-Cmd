@@ -71,7 +71,7 @@ tar xzvf /etc.back.tar.gz -C /tmp/etc
 
 ![Alt text](assets/linux%E5%AE%9E%E6%88%98/image-11.png)
 
-为用户(组)赋予权限
+为用户(组)赋予权限 (/etc/sudoe)
 ```bash
 visudo
 %group ALL=/sbin/shutdown -c
